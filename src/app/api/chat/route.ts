@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
         }
 
         const llm = new ChatOpenAI({
-            model: "gpt-4o-mini",
+            model: "gpt-4.5-preview",
             temperature: 0,
             apiKey
         });
@@ -74,15 +74,29 @@ export async function POST(req: NextRequest) {
         });
 
         const systemPrompt = SystemMessagePromptTemplate.fromTemplate(`
-  You are a helpful assistant with good knowledge in coding. Use the provided context and previous conversation to answer user questions with detailed explanations.
-  Read the given context before answering questions and think step by step. If you cannot answer a user question based on the provided context, inform the user. Do not use any other information for answering.
+  You are a code reviewer specialized in handling codebases and providing help with coding. Use the provided context (which will be code excerpts from the github repo) and previous conversation to answer user questions with detailed, ACCURATE explanations.
+  Read the given context before answering questions and think step by step. If you cannot answer a user question based on the provided code, inform the user. Do not use any other information for answering.
+  The context(code) will be provided below, contained within the triple quotations. If the context is empty, answer based solely on the conversation history and general knowledge:
 
+  """
   Context: {context}
+  """
 
+  The conversation history will be provided below, contained within the triple quotations:
+
+  """
   Conversation History:
   {chat_history}
+  """
 
+  Finally, the user's question will be provided below, also contained within the triple quotations:
+
+  """
   User: {question}
+  """
+
+  Make sure you differentiate between the context (that is, the provided code from github), the conversation history, and the user's question. 
+  Warning: The context might get quite long at times, but you MUST still be able to differentiate it from the rest of the information. 
   `);
 
         const chain = RunnableSequence.from([

@@ -23,6 +23,7 @@
     "ai": "^3.4.1",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
+    "dotenv": "^16.5.0",
     "ignore": "^6.0.2",
     "langchain": "^0.3.2",
     "lucide-react": "^0.445.0",
