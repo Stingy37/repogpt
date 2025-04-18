@@ -99,7 +99,11 @@ export async function POST(req: NextRequest) {
 
   Make sure you differentiate between the context (that is, the provided code from github), the conversation history, and the user's question. 
   Warning: The context might get quite long at times, but you MUST still be able to differentiate it from the rest of the information.
-  Also, do your best to source where you got your answer from.
+  Also, do your best to source where you got your answer from. 
+
+  Always format your entire response in valid Markdown. 
+  When showing code, wrap it in triple‑backticks with the appropriate language tag (python, etc.).
+
   `);
 
         
