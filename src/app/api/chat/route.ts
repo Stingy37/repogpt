@@ -39,9 +39,11 @@ export async function POST(req: NextRequest) {
         }
 
         const llm = new ChatOpenAI({
-            model: "gpt-4.5-preview",
-            temperature: 0,
-            apiKey
+            model: "o4-mini",
+            apiKey,
+            modelKwargs: {
+                reasoning_effort: "high"    // ← pass through to the API
+              }
         });
 
         const embeddings = new OpenAIEmbeddings({
@@ -69,7 +71,7 @@ export async function POST(req: NextRequest) {
 
 
         const retriever = vectorStore.asRetriever({
-            k: 6,
+            k: 8,
             searchType: "similarity"
         });
 
@@ -96,9 +98,11 @@ export async function POST(req: NextRequest) {
   """
 
   Make sure you differentiate between the context (that is, the provided code from github), the conversation history, and the user's question. 
-  Warning: The context might get quite long at times, but you MUST still be able to differentiate it from the rest of the information. 
+  Warning: The context might get quite long at times, but you MUST still be able to differentiate it from the rest of the information.
+  Also, do your best to source where you got your answer from.
   `);
 
+        
         const chain = RunnableSequence.from([
             RunnablePassthrough.assign({
                 context: async (input) => {
@@ -129,8 +133,13 @@ export async function POST(req: NextRequest) {
                 'Content-Type': 'text/plain; charset=utf-8',
             },
         });
-    } catch (e: unknown) {
-        const error = e as { message: string; status?: number };
-        return NextResponse.json({error: error.message}, {status: error.status ?? 500});
+    } catch (e: any) {
+        // ←— updated catch block
+        console.error("OpenAI error:", e);
+        return NextResponse.json(
+          { error: e.message, details: e },
+          { status: e.status ?? 500 }
+        );
+      }
     }
-}
+    

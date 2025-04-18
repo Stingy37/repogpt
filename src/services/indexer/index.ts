@@ -167,7 +167,7 @@ export class Indexer {
      */
     private async splitDocuments(docs: LangchainDocument[]): Promise<LangchainDocument[]> {
         const splitter = new RecursiveCharacterTextSplitter({
-            chunkSize: 2000,
+            chunkSize: 4000,
             chunkOverlap: 200
         });
 
